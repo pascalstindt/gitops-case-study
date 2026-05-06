@@ -1,0 +1,25 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: grafana
+  namespace: grafana
+spec:
+  interval: 1m
+
+  chartRef:
+    kind: OCIRepository
+    name: grafana
+    namespace: grafana
+
+  values:
+    datasources:
+      datasources.yaml:
+        apiVersion: 1
+        datasources:
+          - name: loki
+            type: loki
+            url: http://loki.loki.svc.cluster.local:3100
+            jsonData:
+              httpHeaderName1: X-Scope-OrgID
+            secureJsonData:
+              httpHeaderValue1: local

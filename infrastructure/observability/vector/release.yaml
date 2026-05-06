@@ -1,0 +1,50 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: vector
+  namespace: vector
+spec:
+  interval: 1m
+
+  chartRef:
+    kind: OCIRepository
+    name: vector
+    namespace: vector
+
+  values:
+    role: Agent
+
+    serviceHeadless:
+      enabled: false
+
+    customConfig:
+      data_dir: /vector-data-dir
+
+      sources:
+        internal_metrics:
+          type: internal_metrics
+
+        kubernetes_logs:
+          type: kubernetes_logs
+
+      sinks:
+        prometheus_exporter:
+          type: prometheus_exporter
+          inputs: [ internal_metrics ]
+          address: 0.0.0.0:9090
+
+        console:
+          type: console
+          inputs: [ kubernetes_logs ]
+          encoding:
+            codec: json
+
+        loki:
+          type: loki
+          inputs: [ kubernetes_logs ]
+          endpoint: http://loki.loki.svc.cluster.local:3100
+          tenant_id: local
+          encoding:
+            codec: json
+          labels:
+            source: vector

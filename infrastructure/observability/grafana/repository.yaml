@@ -1,0 +1,10 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: grafana
+  namespace: grafana
+spec:
+  interval: 1h
+  url: oci://ghcr.io/grafana-community/helm-charts/grafana
+  ref:
+    tag: 12.3.0
